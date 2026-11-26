@@ -302,11 +302,16 @@ fn format_state_block(node: &IrNode) -> String {
     lines.join("\n")
 }
 
+/// The ir-slice nodes whose `kind` equals `kind`, in slice order.
+fn slice_nodes_of_kind<'a>(ir_slice: &'a [IrNode], kind: &str) -> Vec<&'a IrNode> {
+    ir_slice.iter().filter(|n| n.kind == kind).collect()
+}
+
 /// STATE MODEL section: one block per `state` node in the ir-slice
 /// (plan section C.4). Omitted entirely when the ir-slice has no state
 /// nodes.
 fn state_model_section(ir_slice: &[IrNode]) -> String {
-    let nodes: Vec<&IrNode> = ir_slice.iter().filter(|n| n.kind == "state").collect();
+    let nodes = slice_nodes_of_kind(ir_slice, "state");
     if nodes.is_empty() {
         return String::new();
     }
@@ -368,7 +373,7 @@ fn format_type_block(node: &IrNode) -> String {
 /// (plan section C.5). Omitted entirely when the ir-slice has no type
 /// nodes.
 fn type_reference_section(ir_slice: &[IrNode]) -> String {
-    let nodes: Vec<&IrNode> = ir_slice.iter().filter(|n| n.kind == "type").collect();
+    let nodes = slice_nodes_of_kind(ir_slice, "type");
     if nodes.is_empty() {
         return String::new();
     }
@@ -540,7 +545,7 @@ fn format_behavior_block(node: &IrNode) -> String {
 /// ir-slice, projected from the Rust IR shape (plan section C.6).
 /// Omitted entirely when the ir-slice has no behavior nodes.
 fn behavioral_reference_section(ir_slice: &[IrNode]) -> String {
-    let nodes: Vec<&IrNode> = ir_slice.iter().filter(|n| n.kind == "behavior").collect();
+    let nodes = slice_nodes_of_kind(ir_slice, "behavior");
     if nodes.is_empty() {
         return String::new();
     }
